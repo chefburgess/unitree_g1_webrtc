@@ -1,6 +1,6 @@
 # Unitree G1 EDU — WebRTC Arm Control & Gesture Research
 
-Undocumented WebRTC API findings for the **Unitree G1 EDU humanoid robot (firmware 1.4.5)**.
+Undocumented WebRTC API findings for the **Unitree G1 EDU humanoid robot (firmware 1.4.5 and 1.5.x)**.
 
 Covers arm service topic discovery, built-in gesture execution, and custom gesture execution by name via `rt/api/arm/request` — none of which are documented in the official SDK or the `unitree_webrtc_connect` library.
 
@@ -18,12 +18,46 @@ This research found that custom gestures **are** accessible via the WebRTC chann
 
 ## Requirements
 
-- Unitree G1 EDU, firmware 1.4.5
+- Unitree G1 EDU, firmware 1.4.5 or 1.5.x
 - Python 3.8+
-- `unitree_webrtc_connect` library
+- `unitree_webrtc_connect >= 2.1.2`
 ```bash
-pip install unitree_webrtc_connect
+pip install "unitree_webrtc_connect>=2.1.2"
 ```
+
+---
+
+## Firmware 1.5.x — AES Key Setup
+
+Firmware 1.5.x encrypts the WebRTC signalling channel. You must fetch the robot's AES key once and store it locally before running any scripts.
+
+**1. Fetch the key**
+
+```bash
+unitree-fetch-aes-key --ip <ROBOT_IP>
+```
+
+This prints the AES key to stdout. Copy the value.
+
+**2. Store it in a `.env` file**
+
+Create a `.env` file in the project root (next to the scripts):
+
+```
+UNITREE_AES_KEY=<paste key here>
+```
+
+Add `.env` to `.gitignore` — never commit this file.
+
+**3. Scripts load it automatically**
+
+All scripts in this repo use `python-dotenv` to load `.env` at startup. No extra steps are required once the file is in place.
+
+```bash
+pip install python-dotenv
+```
+
+If the key is missing or incorrect, the WebRTC handshake will fail silently or return a connection error — re-run `unitree-fetch-aes-key` to refresh it.
 
 ---
 
@@ -40,6 +74,7 @@ pip install unitree_webrtc_connect
 | Audio track (mic) | Not available on G1 1.4.5 — zero frames received |
 | Sport commands via WebRTC | Return 3203 on G1 — Go2 only |
 | Firmware 1.4.5 | Confirmed working (library docs only list 1.4.0) |
+| Firmware 1.5.x | Confirmed working with AES key |
 
 ---
 
@@ -66,6 +101,7 @@ Custom gestures are recorded via the Unitree app training mode and appear in `Ge
 - The RockChip only allows one WebRTC client at a time — app disconnects when script connects
 - Always call `release_arm` (data=99) after each gesture
 - Connect in stable damping state — 504 timeout occurs during FSM transitions
+- **Never hardcode the AES key** — use environment variables (`.env` + `python-dotenv`)
 
 ---
 
@@ -82,5 +118,5 @@ Custom gestures are recorded via the Unitree app training mode and appear in `Ge
 
 ## Credits
 
-- `unitree_webrtc_connect` by [legion1581](https://github.com/legion1581/unitree_webrtc_connect) — the WebRTC driver that made this possible
+- `unitree_webrtc_connect` by [legion1581](https://github.com/legion1581/unitree_webrtc_connect) — the WebRTC driver that made this possible, including 1.5.x AES key support added in v2.1.2
 - Research conducted as part of the Brewbert voice assistant project on G1 EDU
