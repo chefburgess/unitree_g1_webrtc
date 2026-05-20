@@ -90,7 +90,7 @@ If the key is missing or incorrect, the WebRTC handshake will fail silently or r
 | 22 | refuse | Use sparingly |
 | 99 | release_arm | Always call after gesture |
 
-Custom gestures are recorded via the Unitree app training mode and appear in `GetActionList` results.
+Custom gestures are recorded via the Unitree app training mode and appear in GetActionList results. However, triggering them programmatically via api_id 7112 over WebRTC consistently returns error 7403. The arm service acknowledges the request (code 0 from the RockChip) but the motion controller does not execute — suspected cause is an FSM state precondition that is not being met by the external WebRTC client. The exact FSM state required to unlock 7112 dispatch has not yet been confirmed. Investigation ongoing — contributions welcome.
 
 ---
 
