@@ -102,7 +102,9 @@ async def main():
 
     conn = UnitreeWebRTCConnection(
         WebRTCConnectionMethod.LocalSTA,
-        ip=ROCKHIP_IP
+        ip=ROCKHIP_IP,
+        aes_128_key=AES_KEY,
+        device_type="G1"
     )
     await conn.connect()
 
