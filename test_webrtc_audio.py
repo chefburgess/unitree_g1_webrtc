@@ -14,7 +14,11 @@ import asyncio
 import sys
 import numpy as np
 
+import os
+from dotenv import load_dotenv
 from unitree_webrtc_connect.webrtc_driver import UnitreeWebRTCConnection
+load_dotenv(os.path.expanduser("~/brewbert_brain/.env"))
+AES_KEY = os.environ.get("UNITREE_AES_KEY")
 from unitree_webrtc_connect.constants import WebRTCConnectionMethod
 
 frame_count = 0
@@ -30,7 +34,7 @@ async def on_audio_frame(frame):
               f"max_amplitude={np.abs(arr).max()}")
 
 async def main():
-    conn = UnitreeWebRTCConnection(WebRTCConnectionMethod.LocalSTA, ip="192.168.123.161")
+    conn = UnitreeWebRTCConnection(WebRTCConnectionMethod.LocalSTA, ip="192.168.123.161", aes_128_key=AES_KEY, device_type="G1")
     await conn.connect()
     await asyncio.sleep(0.5)
 
