@@ -6,11 +6,15 @@ Tests multiple candidate topics and shows which ones respond.
 import asyncio
 import json
 
+import os
+from dotenv import load_dotenv
 from unitree_webrtc_connect.webrtc_driver import UnitreeWebRTCConnection
+load_dotenv(os.path.expanduser("~/brewbert_brain/.env"))
+AES_KEY = os.environ.get("UNITREE_AES_KEY")
 from unitree_webrtc_connect.constants import WebRTCConnectionMethod, DATA_CHANNEL_TYPE
 
 async def main():
-    conn = UnitreeWebRTCConnection(WebRTCConnectionMethod.LocalSTA, ip="192.168.123.161")
+    conn = UnitreeWebRTCConnection(WebRTCConnectionMethod.LocalSTA, ip="192.168.123.161", aes_128_key=AES_KEY, device_type="G1")
     await conn.connect()
     await asyncio.sleep(1)
 
